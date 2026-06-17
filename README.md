@@ -1,7 +1,8 @@
 # F5-TTS: A Fairytaler that Fakes Fluent and Faithful Speech with Flow Matching
 
 В данный форк добавлены исправления для работы с ударениями в русском языке. Любые конструктивные предложения также по доработкам для русского языка приветствуются. Сделал слияние изменений кода с оригинальным SWivid/F5-TTS по 17.
-6.2026
+06.2026
+
 [![python](https://img.shields.io/badge/Python-3.10-brightgreen)](https://github.com/SWivid/F5-TTS)
 [![arXiv](https://img.shields.io/badge/arXiv-2410.06885-b31b1b.svg?logo=arXiv)](https://arxiv.org/abs/2410.06885)
 [![demo](https://img.shields.io/badge/GitHub-Demo-orange.svg)](https://swivid.github.io/F5-TTS/)
