@@ -3,32 +3,38 @@ hydra:
     dir: ckpts/${model.name}_${model.mel_spec.mel_spec_type}_${model.tokenizer}_${datasets.name}/${now:%Y-%m-%d}/${now:%H-%M-%S}
 
 datasets:
-  name: Emilia_ZH_EN
+  name: LibriTTS_100_360_500  # dataset name
   batch_size_per_gpu: 38400  # 8 GPUs, 8 * 38400 = 307200
   batch_size_type: frame  # frame | sample
   max_samples: 64  # max sequences per batch if use frame-wise batch_size. we set 32 for small models, 64 for base models
   num_workers: 16
 
 optim:
-  epochs: 11
+  epochs: 686
   learning_rate: 7.5e-5
   num_warmup_updates: 20000  # warmup updates
   grad_accumulation_steps: 1  # note: updates = steps / grad_accumulation_steps
-  max_grad_norm: 1.0
-  bnb_optimizer: False  
+  max_grad_norm: 1.0  # gradient clipping
+  bnb_optimizer: False  # use bnb 8bit AdamW optimizer or not
 
 model:
-  name: E2TTS_Small
-  tokenizer: pinyin
+  name: F5TTS_v1_Small  # model name
+  tokenizer: char  # tokenizer type
   tokenizer_path: null  # if 'custom' tokenizer, define the path want to use (should be vocab.txt)
-  backbone: UNetT
+  backbone: DiT
   arch:
     dim: 768
-    depth: 20
+    depth: 18
     heads: 12
-    ff_mult: 4
-    text_mask_padding: False
-    pe_attn_head: 1
+    ff_mult: 2
+    text_dim: 512
+    text_mask_padding: True
+    qk_norm: null  # null | rms_norm
+    conv_layers: 4
+    pe_attn_head: null
+    attn_backend: torch  # torch | flash_attn
+    attn_mask_enabled: False
+    checkpoint_activations: False  # recompute activations and save memory for extra compute
   mel_spec:
     target_sample_rate: 24000
     n_mel_channels: 100

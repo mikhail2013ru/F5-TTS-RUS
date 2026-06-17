@@ -85,6 +85,7 @@ class Trainer:
                     "grad_accumulation_steps": grad_accumulation_steps,
                     "max_grad_norm": max_grad_norm,
                     "noise_scheduler": noise_scheduler,
+                    "bnb_optimizer": bnb_optimizer,
                 }
             model_cfg_dict["gpus"] = self.accelerator.num_processes
             self.accelerator.init_trackers(
@@ -96,7 +97,9 @@ class Trainer:
         elif self.logger == "tensorboard":
             from torch.utils.tensorboard import SummaryWriter
 
-            self.writer = SummaryWriter(log_dir=f"runs/{wandb_run_name}")
+            self.writer = None
+            if self.accelerator.is_main_process:
+                self.writer = SummaryWriter(log_dir=f"runs/{wandb_run_name}")
 
         self.model = model
 
@@ -137,7 +140,7 @@ class Trainer:
 
             self.optimizer = bnb.optim.AdamW8bit(model.parameters(), lr=learning_rate)
         else:
-            self.optimizer = AdamW(model.parameters(), lr=learning_rate)
+            self.optimizer = AdamW(model.parameters(), lr=learning_rate, fused=True)
         self.model, self.optimizer = self.accelerator.prepare(self.model, self.optimizer)
 
     @property
@@ -392,9 +395,9 @@ class Trainer:
                     self.accelerator.log(
                         {"loss": loss.item(), "lr": self.scheduler.get_last_lr()[0]}, step=global_update
                     )
-                    if self.logger == "tensorboard":
-                        self.writer.add_scalar("loss", loss.item(), global_update)
-                        self.writer.add_scalar("lr", self.scheduler.get_last_lr()[0], global_update)
+                if self.logger == "tensorboard" and self.accelerator.is_main_process:
+                    self.writer.add_scalar("loss", loss.item(), global_update)
+                    self.writer.add_scalar("lr", self.scheduler.get_last_lr()[0], global_update)
 
                 if global_update % self.last_per_updates == 0 and self.accelerator.sync_gradients:
                     self.save_checkpoint(global_update, last=True)
@@ -407,7 +410,7 @@ class Trainer:
                         infer_text = [
                             text_inputs[0] + ([" "] if isinstance(text_inputs[0], list) else " ") + text_inputs[0]
                         ]
-                        with torch.inference_mode():
+                        with torch.inference_mode(), self.accelerator.autocast():
                             generated, _ = self.accelerator.unwrap_model(self.model).sample(
                                 cond=mel_spec[0][:ref_audio_len].unsqueeze(0),
                                 text=infer_text,
@@ -418,7 +421,7 @@ class Trainer:
                             )
                             generated = generated.to(torch.float32)
                             gen_mel_spec = generated[:, ref_audio_len:, :].permute(0, 2, 1).to(self.accelerator.device)
-                            ref_mel_spec = batch["mel"][0].unsqueeze(0)
+                            ref_mel_spec = batch["mel"][0, :, :ref_audio_len].unsqueeze(0)
                             if self.vocoder_name == "vocos":
                                 gen_audio = vocoder.decode(gen_mel_spec).cpu()
                                 ref_audio = vocoder.decode(ref_mel_spec).cpu()
