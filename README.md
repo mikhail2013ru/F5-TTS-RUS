@@ -33,23 +33,12 @@
 > 1. Перейдите в `Runtime` → `Change runtime type`  
 > 2. Выберите `Hardware accelerator: GPU` (например, `T4` или выше)
 
-### 🔊 Вариант 1: Использование `ruaccent` для ударений
-
-Разработка блокнота временно заморожена. 
-
-[![Open In Colab F5-TTS (ruaccent)](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mikhail2013ru/ESPEECH_TTS_INFER/blob/main/notebooks/ESPEECH_TTS_INFER_2.2_ruaccent.ipynb)
-
-👉 Этот ноутбук использует библиотеку `ruaccent` для расстановки ударений.  
-Модель загружается **один раз**, затем можно генерировать несколько аудио.
-
-### 🔊 Вариант 2: Использование `silero-stress` для ударений
-
-Поддерживается в актуальном состоянии.
+### 🔊 Использование `silero-stress + ruaccent-predictor`
 
 [![Open In Colab F5-TTS (silero-stress)](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mikhail2013ru/ESPEECH_TTS_INFER/blob/main/notebooks/ESPEECH_TTS_INFER_2.2_Silero-stress.ipynb)
 
-👉 Этот ноутбук использует библиотеку `silero-stress` для расстановки ударений.  
-Она **быстрее и точнее** `ruaccent`, но также требует загрузки модели.
+👉 Этот ноутбук использует библиотеку `silero-stress` только для ёфикации и ruaccent-predictor для расстановки ударений.  
+Всё происходит в автоматическом режиме при нажатии на кнопку "Нормализовать". 
 
 ---
 
