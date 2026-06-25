@@ -35,7 +35,7 @@
 
 ### 🔊 Использование `silero-stress + ruaccent-predictor`
 
-[![Open In Colab F5-TTS (silero-stress)](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mikhail2013ru/ESPEECH_TTS_INFER/blob/main/notebooks/ESPEECH_TTS_INFER_2.2_Silero-stress.ipynb)
+[![Open In Colab F5-TTS](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mikhail2013ru/ESPEECH_TTS_INFER/blob/main/notebooks/ESPEECH_TTS_INFER_2.2_Silero-stress.ipynb)
 
 👉 Этот ноутбук использует библиотеку `silero-stress` только для ёфикации и ruaccent-predictor для расстановки ударений.  
 Всё происходит в автоматическом режиме при нажатии на кнопку "Нормализовать". 
